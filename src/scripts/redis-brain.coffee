@@ -6,6 +6,7 @@
 #
 # Configuration:
 #   REDISTOGO_URL or REDISCLOUD_URL or BOXEN_REDIS_URL or REDIS_URL
+#   REDIS_BRAIN_PREFIX - prefix of redis keys for Hubot's brain (defaults to 'hubot')
 #
 # Commands:
 #   None
@@ -19,11 +20,12 @@ Redis = require "redis"
 module.exports = (robot) ->
   info   = Url.parse process.env.REDISTOGO_URL or process.env.REDISCLOUD_URL or process.env.BOXEN_REDIS_URL or process.env.REDIS_URL or 'redis://localhost:6379'
   client = Redis.createClient(info.port, info.hostname)
+  prefix = process.env.REDIS_BRAIN_PREFIX or 'hubot'
 
   robot.brain.setAutoSave false
 
   getData = ->
-    client.get "hubot:storage", (err, reply) ->
+    client.get "#{prefix}:storage", (err, reply) ->
       if err
         throw err
       else if reply
@@ -51,7 +53,7 @@ module.exports = (robot) ->
     getData() if not info.auth
 
   robot.brain.on 'save', (data = {}) ->
-    client.set 'hubot:storage', JSON.stringify data
+    client.set '#{prefix}:storage', JSON.stringify data
 
   robot.brain.on 'close', ->
     client.quit()

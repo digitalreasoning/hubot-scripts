@@ -17,9 +17,9 @@ Url   = require "url"
 Redis = require "redis"
 
 module.exports = (robot) ->
-  info   = Url.parse process.env.REDISTOGO_URL or process.env.REDISCLOUD_URL or process.env.BOXEN_REDIS_URL or process.env.REDIS_URL or 'redis://localhost:6379?prefix=hubot', true
+  info   = Url.parse process.env.REDISTOGO_URL or process.env.REDISCLOUD_URL or process.env.BOXEN_REDIS_URL or process.env.REDIS_URL or 'redis://localhost:6379/hubot', true
   client = Redis.createClient(info.port, info.hostname)
-  prefix = info.query.prefix or 'hubot'
+  prefix = info.path.replace('/', '') or 'hubot'
 
   robot.brain.setAutoSave false
 
